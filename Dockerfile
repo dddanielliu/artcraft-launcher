@@ -59,8 +59,10 @@ FROM toolchain AS build-photocraft
 RUN set -eux; \
     url=$(try_download_release.sh photocraft); \
     if [ -n "$url" ]; then \
+      echo "[photocraft] using prebuilt release: $url"; \
       mkdir -p dist/photocraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/photocraft/; \
     else \
+      echo "[photocraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/photocraft.git photocraft && \
       (cd photocraft/apps/photocraft-web && trunk build --release) && \
       mkdir -p dist/photocraft && cp -r photocraft/dist/web/. dist/photocraft/; \
@@ -70,8 +72,10 @@ FROM toolchain AS build-vectorcraft
 RUN set -eux; \
     url=$(try_download_release.sh vectorcraft); \
     if [ -n "$url" ]; then \
+      echo "[vectorcraft] using prebuilt release: $url"; \
       mkdir -p dist/vectorcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/vectorcraft/; \
     else \
+      echo "[vectorcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/vectorcraft.git vectorcraft && \
       (cd vectorcraft/apps/vectorcraft-web && trunk build --release) && \
       mkdir -p dist/vectorcraft && cp -r vectorcraft/dist/web/. dist/vectorcraft/; \
@@ -81,8 +85,10 @@ FROM toolchain AS build-pdfcraft
 RUN set -eux; \
     url=$(try_download_release.sh pdfcraft); \
     if [ -n "$url" ]; then \
+      echo "[pdfcraft] using prebuilt release: $url"; \
       mkdir -p dist/pdfcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/pdfcraft/; \
     else \
+      echo "[pdfcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/pdfcraft.git pdfcraft && \
       (cd pdfcraft/apps/pdfcraft-web && trunk build --release) && \
       mkdir -p dist/pdfcraft && cp -r pdfcraft/dist/web/. dist/pdfcraft/; \
@@ -94,8 +100,10 @@ FROM toolchain AS build-filmcraft
 RUN set -eux; \
     url=$(try_download_release.sh filmcraft); \
     if [ -n "$url" ]; then \
+      echo "[filmcraft] using prebuilt release: $url"; \
       mkdir -p dist/filmcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/filmcraft/; \
     else \
+      echo "[filmcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/filmcraft.git filmcraft && \
       cd filmcraft && cargo xtask web && mkdir -p ../dist/filmcraft && cp -r target/web/dist/. ../dist/filmcraft/; \
     fi
@@ -104,8 +112,10 @@ FROM toolchain AS build-lightcraft
 RUN set -eux; \
     url=$(try_download_release.sh lightcraft); \
     if [ -n "$url" ]; then \
+      echo "[lightcraft] using prebuilt release: $url"; \
       mkdir -p dist/lightcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/lightcraft/; \
     else \
+      echo "[lightcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/lightcraft.git lightcraft && \
       cd lightcraft && cargo xtask web && mkdir -p ../dist/lightcraft && cp -r target/web/. ../dist/lightcraft/; \
     fi
@@ -114,8 +124,10 @@ FROM toolchain AS build-effectcraft
 RUN set -eux; \
     url=$(try_download_release.sh effectcraft); \
     if [ -n "$url" ]; then \
+      echo "[effectcraft] using prebuilt release: $url"; \
       mkdir -p dist/effectcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/effectcraft/; \
     else \
+      echo "[effectcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/effectcraft.git effectcraft && \
       cd effectcraft && cargo xtask web && mkdir -p ../dist/effectcraft && cp -r target/web/dist/. ../dist/effectcraft/; \
     fi
@@ -124,8 +136,10 @@ FROM toolchain AS build-designcraft
 RUN set -eux; \
     url=$(try_download_release.sh designcraft); \
     if [ -n "$url" ]; then \
+      echo "[designcraft] using prebuilt release: $url"; \
       mkdir -p dist/designcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/designcraft/; \
     else \
+      echo "[designcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/designcraft.git designcraft && \
       (cd designcraft/apps/designcraft-web && trunk build --release) && \
       mkdir -p dist/designcraft && cp -r designcraft/dist/web/. dist/designcraft/; \
@@ -135,8 +149,10 @@ FROM toolchain AS build-wordcraft
 RUN set -eux; \
     url=$(try_download_release.sh wordcraft); \
     if [ -n "$url" ]; then \
+      echo "[wordcraft] using prebuilt release: $url"; \
       mkdir -p dist/wordcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/wordcraft/; \
     else \
+      echo "[wordcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/wordcraft.git wordcraft && \
       (cd wordcraft/apps/wordcraft-web && trunk build --release) && \
       mkdir -p dist/wordcraft && cp -r wordcraft/dist/web/. dist/wordcraft/; \
@@ -146,8 +162,10 @@ FROM toolchain AS build-gridcraft
 RUN set -eux; \
     url=$(try_download_release.sh gridcraft); \
     if [ -n "$url" ]; then \
+      echo "[gridcraft] using prebuilt release: $url"; \
       mkdir -p dist/gridcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/gridcraft/; \
     else \
+      echo "[gridcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/gridcraft.git gridcraft && \
       (cd gridcraft/apps/gridcraft-web && trunk build --release) && \
       mkdir -p dist/gridcraft && cp -r gridcraft/dist/web/. dist/gridcraft/; \
@@ -157,8 +175,10 @@ FROM toolchain AS build-deckcraft
 RUN set -eux; \
     url=$(try_download_release.sh deckcraft); \
     if [ -n "$url" ]; then \
+      echo "[deckcraft] using prebuilt release: $url"; \
       mkdir -p dist/deckcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/deckcraft/; \
     else \
+      echo "[deckcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/deckcraft.git deckcraft && \
       (cd deckcraft/apps/deckcraft-web && trunk build --release) && \
       mkdir -p dist/deckcraft && cp -r deckcraft/dist/web/. dist/deckcraft/; \
@@ -168,8 +188,10 @@ FROM toolchain AS build-soundcraft
 RUN set -eux; \
     url=$(try_download_release.sh soundcraft); \
     if [ -n "$url" ]; then \
+      echo "[soundcraft] using prebuilt release: $url"; \
       mkdir -p dist/soundcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/soundcraft/; \
     else \
+      echo "[soundcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/soundcraft.git soundcraft && \
       (cd soundcraft/apps/soundcraft-web && trunk build --release) && \
       mkdir -p dist/soundcraft && cp -r soundcraft/dist/web/. dist/soundcraft/; \
@@ -179,8 +201,10 @@ FROM toolchain AS build-cadcraft
 RUN set -eux; \
     url=$(try_download_release.sh cadcraft); \
     if [ -n "$url" ]; then \
+      echo "[cadcraft] using prebuilt release: $url"; \
       mkdir -p dist/cadcraft && curl -fsSL -o /tmp/web.zip "$url" && unzip -q /tmp/web.zip -d /tmp/extract && mv /tmp/extract/*/* dist/cadcraft/; \
     else \
+      echo "[cadcraft] no prebuilt release found; building from source"; \
       git clone --depth 1 https://github.com/storytold/cadcraft.git cadcraft && \
       (cd cadcraft/apps/cadcraft-web && trunk build --release) && \
       mkdir -p dist/cadcraft && cp -r cadcraft/dist/web/. dist/cadcraft/; \
