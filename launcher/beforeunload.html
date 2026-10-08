@@ -1,0 +1,10 @@
+<script>
+  // Generic, always-on "leave site?" prompt. The launcher has no visibility into
+  // any app's actual save state (that lives deep in each app's own WASM document
+  // model), so this fires unconditionally rather than only when there really are
+  // unsaved changes — a blunter version of the warning Google Docs shows.
+  window.addEventListener('beforeunload', function (event) {
+    event.preventDefault();
+    event.returnValue = '';
+  });
+</script>

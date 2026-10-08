@@ -214,6 +214,17 @@ COPY --from=build-deckcraft    /build/dist/deckcraft    /usr/share/nginx/html/ap
 COPY --from=build-soundcraft   /build/dist/soundcraft   /usr/share/nginx/html/apps/soundcraft
 COPY --from=build-cadcraft     /build/dist/cadcraft     /usr/share/nginx/html/apps/cadcraft
 
+# Generic "leave site?" warning, injected into every app's index.html (not the
+# launcher's own home page). See launcher/beforeunload.html for why this is
+# unconditional rather than tied to real unsaved-changes state.
+COPY launcher/beforeunload.html /tmp/beforeunload.html
+RUN set -eux; \
+    for slug in photocraft vectorcraft pdfcraft filmcraft lightcraft effectcraft designcraft wordcraft gridcraft deckcraft soundcraft cadcraft; do \
+      f="/usr/share/nginx/html/apps/${slug}/index.html"; \
+      awk '/<\/head>/{while((getline line < "/tmp/beforeunload.html") > 0) print line; close("/tmp/beforeunload.html")} {print}' "$f" > /tmp/out.html; \
+      mv /tmp/out.html "$f"; \
+    done
+
 # Per-app icons (served at /icons/<slug>.png for the tile grid). Fetched directly
 # from each repo's main branch — independent of which build path that app took.
 RUN set -eux; \
