@@ -194,6 +194,9 @@ RUN apk add --no-cache curl
 
 COPY launcher/index.html /usr/share/nginx/html/index.html
 
+RUN curl -fsSL -o /usr/share/nginx/html/favicon.png \
+      "https://avatars.githubusercontent.com/u/76897702?s=200&v=4"
+
 # Per-app static builds. The fallback (source-build) paths land at
 # <slug>/dist/web; the curl path lands at dist/<slug> directly — both stages
 # normalize to dist/<slug> for the trunk-style apps. The three xtask apps
