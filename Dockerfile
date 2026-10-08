@@ -27,7 +27,10 @@ RUN apt-get update \
 
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo install trunk --locked
-RUN cargo install wasm-bindgen-cli --locked
+# Pinned for filmcraft/lightcraft/effectcraft, which use `cargo xtask web` instead of Trunk
+# and check this exact version against their Cargo.lock. Trunk manages its own wasm-bindgen
+# fetch per-project regardless, so pinning here doesn't affect the other 9 apps.
+RUN cargo install wasm-bindgen-cli --version 0.2.129 --locked
 
 WORKDIR /build
 
@@ -45,17 +48,19 @@ FROM toolchain AS build-pdfcraft
 RUN git clone --depth 1 https://github.com/storytold/pdfcraft.git pdfcraft
 RUN cd pdfcraft/apps/pdfcraft-web && trunk build --release
 
+# NB: filmcraft/lightcraft/effectcraft don't use Trunk — they build via a `cargo xtask web`
+# command run from the repo root, invoking wasm-bindgen directly.
 FROM toolchain AS build-filmcraft
 RUN git clone --depth 1 https://github.com/storytold/filmcraft.git filmcraft
-RUN cd filmcraft/apps/filmcraft-web && trunk build --release
+RUN cd filmcraft && cargo xtask web
 
 FROM toolchain AS build-lightcraft
 RUN git clone --depth 1 https://github.com/storytold/lightcraft.git lightcraft
-RUN cd lightcraft/apps/lightcraft-web && trunk build --release
+RUN cd lightcraft && cargo xtask web
 
 FROM toolchain AS build-effectcraft
 RUN git clone --depth 1 https://github.com/storytold/effectcraft.git effectcraft
-RUN cd effectcraft/apps/effectcraft-web && trunk build --release
+RUN cd effectcraft && cargo xtask web
 
 FROM toolchain AS build-designcraft
 RUN git clone --depth 1 https://github.com/storytold/designcraft.git designcraft
@@ -91,9 +96,9 @@ COPY launcher/index.html /usr/share/nginx/html/index.html
 COPY --from=build-photocraft   /build/photocraft/dist/web   /usr/share/nginx/html/apps/photocraft
 COPY --from=build-vectorcraft  /build/vectorcraft/dist/web  /usr/share/nginx/html/apps/vectorcraft
 COPY --from=build-pdfcraft     /build/pdfcraft/dist/web     /usr/share/nginx/html/apps/pdfcraft
-COPY --from=build-filmcraft    /build/filmcraft/dist/web    /usr/share/nginx/html/apps/filmcraft
-COPY --from=build-lightcraft   /build/lightcraft/dist/web   /usr/share/nginx/html/apps/lightcraft
-COPY --from=build-effectcraft  /build/effectcraft/dist/web  /usr/share/nginx/html/apps/effectcraft
+COPY --from=build-filmcraft    /build/filmcraft/target/web/dist    /usr/share/nginx/html/apps/filmcraft
+COPY --from=build-lightcraft   /build/lightcraft/target/web        /usr/share/nginx/html/apps/lightcraft
+COPY --from=build-effectcraft  /build/effectcraft/target/web/dist  /usr/share/nginx/html/apps/effectcraft
 COPY --from=build-designcraft  /build/designcraft/dist/web  /usr/share/nginx/html/apps/designcraft
 COPY --from=build-wordcraft    /build/wordcraft/dist/web    /usr/share/nginx/html/apps/wordcraft
 COPY --from=build-gridcraft    /build/gridcraft/dist/web    /usr/share/nginx/html/apps/gridcraft
