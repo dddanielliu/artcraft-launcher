@@ -18,7 +18,7 @@ sync between apps. This is purely a shared front door, not a shared workspace.
 docker compose up --build
 ```
 
-Then open <http://localhost:8080>.
+Then open <http://localhost:8008>.
 
 The first build compiles 12 Rust/WASM apps from source, so it's slow (expect it to take a
 while) — subsequent builds reuse Docker's layer cache unless `apps.txt` or the Dockerfile
