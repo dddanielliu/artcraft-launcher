@@ -5,13 +5,15 @@
 # tile-based home page via nginx. Each app is fully independent (its own repo,
 # its own local-first storage) — this image just gives them one front door.
 #
-# Each app gets its own build stage (all FROM `toolchain`, none depending on
-# each other), so BuildKit's DAG scheduler builds them concurrently instead of
-# one at a time — this is the thing that makes the "multi-stage build" here
-# actually parallel, not just multiple stages.
+# Each app gets its own build stage, so BuildKit's DAG scheduler builds them
+# concurrently instead of one at a time. They're split into two waves of 6
+# (wave 2 stages build FROM the `wave1-done` barrier instead of `toolchain`)
+# so peak concurrent cargo/rustc memory use stays bounded — building all 12
+# at once can exhaust memory even on a well-resourced machine.
 #
 # To add an app: add a line to apps.txt, add a `FROM toolchain AS build-<slug>`
-# stage below (copy an existing one), then add its two COPY lines in `final`.
+# (or `FROM wave1-done AS build-<slug>` for wave 2) stage below, then add its
+# two COPY lines in `final`.
 
 FROM rust:1-slim-bookworm AS toolchain
 
@@ -24,6 +26,11 @@ RUN apt-get update \
         curl \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# 12 independent stages building concurrently, each spawning its own parallel
+# cargo/rustc processes, can exhaust memory even on a well-resourced machine.
+# Capping jobs per-stage keeps total concurrent memory use bounded.
+ENV CARGO_BUILD_JOBS=2
 
 RUN rustup target add wasm32-unknown-unknown
 RUN cargo install trunk --locked
@@ -62,27 +69,41 @@ FROM toolchain AS build-effectcraft
 RUN git clone --depth 1 https://github.com/storytold/effectcraft.git effectcraft
 RUN cd effectcraft && cargo xtask web
 
-FROM toolchain AS build-designcraft
+# --- Wave barrier ---
+# Building all 12 apps' cargo/rustc processes fully concurrently can exceed
+# available memory even on a well-resourced machine. This stage can't finish
+# until every wave-1 app above has, so the wave-2 stages below (which build
+# FROM this instead of `toolchain`) are forced to wait — capping peak
+# concurrency at 6 apps at a time instead of 12.
+FROM toolchain AS wave1-done
+COPY --from=build-photocraft  /build/photocraft/apps  /tmp/wave1/photocraft
+COPY --from=build-vectorcraft /build/vectorcraft/apps /tmp/wave1/vectorcraft
+COPY --from=build-pdfcraft    /build/pdfcraft/apps    /tmp/wave1/pdfcraft
+COPY --from=build-filmcraft   /build/filmcraft/target/web   /tmp/wave1/filmcraft
+COPY --from=build-lightcraft  /build/lightcraft/target/web  /tmp/wave1/lightcraft
+COPY --from=build-effectcraft /build/effectcraft/target/web /tmp/wave1/effectcraft
+
+FROM wave1-done AS build-designcraft
 RUN git clone --depth 1 https://github.com/storytold/designcraft.git designcraft
 RUN cd designcraft/apps/designcraft-web && trunk build --release
 
-FROM toolchain AS build-wordcraft
+FROM wave1-done AS build-wordcraft
 RUN git clone --depth 1 https://github.com/storytold/wordcraft.git wordcraft
 RUN cd wordcraft/apps/wordcraft-web && trunk build --release
 
-FROM toolchain AS build-gridcraft
+FROM wave1-done AS build-gridcraft
 RUN git clone --depth 1 https://github.com/storytold/gridcraft.git gridcraft
 RUN cd gridcraft/apps/gridcraft-web && trunk build --release
 
-FROM toolchain AS build-deckcraft
+FROM wave1-done AS build-deckcraft
 RUN git clone --depth 1 https://github.com/storytold/deckcraft.git deckcraft
 RUN cd deckcraft/apps/deckcraft-web && trunk build --release
 
-FROM toolchain AS build-soundcraft
+FROM wave1-done AS build-soundcraft
 RUN git clone --depth 1 https://github.com/storytold/soundcraft.git soundcraft
 RUN cd soundcraft/apps/soundcraft-web && trunk build --release
 
-FROM toolchain AS build-cadcraft
+FROM wave1-done AS build-cadcraft
 RUN git clone --depth 1 https://github.com/storytold/cadcraft.git cadcraft
 RUN cd cadcraft/apps/cadcraft-web && trunk build --release
 
