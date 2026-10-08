@@ -12,4 +12,12 @@ api_url="https://api.github.com/repos/storytold/${slug}/releases/latest"
 # the caller treats an empty result as "fall back to a source build".
 response=$(curl -fsSL "$api_url" 2>/dev/null) || { echo ""; exit 0; }
 
-echo "$response" | jq -r '.assets[]? | select(.name | test("-web-.*\\.zip$")) | .browser_download_url' | head -n1
+# Plain grep/sed instead of jq: GitHub's response has occasionally included
+# raw control characters inside release notes, which jq's strict parser
+# rejects outright ("Invalid string: control characters ... must be
+# escaped") even though the asset list itself parses fine. Line-based text
+# extraction doesn't care about what's in unrelated fields.
+echo "$response" \
+  | grep -o '"browser_download_url": *"[^"]*-web-[^"]*\.zip"' \
+  | head -n1 \
+  | sed -E 's/.*"(https:[^"]+)"$/\1/'
