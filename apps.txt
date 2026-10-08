@@ -1,0 +1,12 @@
+photocraft|PhotoCraft|Image editor
+vectorcraft|VectorCraft|Vector illustration
+pdfcraft|PdfCraft|PDF reading & editing
+filmcraft|FilmCraft|Video editing, color & sound
+lightcraft|LightCraft|Photo library & raw development
+effectcraft|EffectCraft|Motion graphics & VFX
+designcraft|DesignCraft|Page layout & publishing
+wordcraft|WordCraft|Word processing
+gridcraft|GridCraft|Spreadsheets
+deckcraft|DeckCraft|Presentations & slide shows
+soundcraft|SoundCraft|Audio production
+cadcraft|CadCraft|CAD & drafting

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArtCraft Launcher</title>
+<style>
+  :root {
+    --bg: #f3f2f1;
+    --card-bg: #ffffff;
+    --text: #1b1a19;
+    --muted: #605e5c;
+    --accent: #3a3a3a;
+    --border: #e1dfdd;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1a19;
+      --card-bg: #252423;
+      --text: #f3f2f1;
+      --muted: #c8c6c4;
+      --accent: #d0d0d0;
+      --border: #3b3a39;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    padding: 2.5rem 2rem 1rem;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 2rem 3rem;
+  }
+  a.tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.4rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  a.tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  }
+  a.tile img {
+    width: 56px;
+    height: 56px;
+  }
+  a.tile .name {
+    font-weight: 600;
+    font-size: 0.98rem;
+  }
+  a.tile .category {
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    padding: 1rem 0 2rem;
+  }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+  <header>
+    <h1>ArtCraft Launcher</h1>
+    <p>One home screen for the open-source ArtCraft crafting apps. Each app runs entirely in your browser — nothing is shared between them.</p>
+  </header>
+
+  <main class="grid" id="grid"></main>
+
+  <footer>
+    Unofficial launcher &middot; apps by <a href="https://github.com/storytold" target="_blank" rel="noopener">storytold</a>
+  </footer>
+
+  <script>
+    const apps = [
+      { slug: "photocraft",  name: "PhotoCraft",  category: "Image editor" },
+      { slug: "vectorcraft", name: "VectorCraft", category: "Vector illustration" },
+      { slug: "pdfcraft",    name: "PdfCraft",     category: "PDF reading & editing" },
+      { slug: "filmcraft",   name: "FilmCraft",    category: "Video, color & sound" },
+      { slug: "lightcraft",  name: "LightCraft",   category: "Photo library & raw" },
+      { slug: "effectcraft", name: "EffectCraft",  category: "Motion graphics & VFX" },
+      { slug: "designcraft", name: "DesignCraft",  category: "Page layout & publishing" },
+      { slug: "wordcraft",   name: "WordCraft",    category: "Word processing" },
+      { slug: "gridcraft",   name: "GridCraft",    category: "Spreadsheets" },
+      { slug: "deckcraft",   name: "DeckCraft",    category: "Presentations" },
+      { slug: "soundcraft",  name: "SoundCraft",   category: "Audio production" },
+      { slug: "cadcraft",    name: "CadCraft",     category: "CAD & drafting" },
+    ];
+
+    const grid = document.getElementById("grid");
+    for (const app of apps) {
+      const a = document.createElement("a");
+      a.className = "tile";
+      a.href = `/apps/${app.slug}/`;
+
+      const img = document.createElement("img");
+      img.src = `/icons/${app.slug}.png`;
+      img.alt = `${app.name} icon`;
+
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = app.name;
+
+      const category = document.createElement("div");
+      category.className = "category";
+      category.textContent = app.category;
+
+      a.append(img, name, category);
+      grid.append(a);
+    }
+  </script>
+</body>
+</html>
